@@ -1,4 +1,5 @@
 import java.nio.charset.StandardCharsets;
+import java.lang.*;
 
 public class Main
 {
@@ -88,9 +89,38 @@ public class Main
 		return addBinary(firstStep, a);
 	}
 	
+	public static String addBinary(String x, String y, String z, String a, String b) {
+		String firstStep = addBinary(x, y, z, a);
+		return addBinary(firstStep, b);
+	}
+	
 	public static String toBinary(int toConvert){
 	    return Integer.toBinaryString(toConvert);
 	}
+	
+	public static String toBinary(double d, int precision) {
+        long wholePart = (long) d;
+        return wholeToBinary(wholePart) + '.' + fractionalToBinary(d - wholePart, precision);
+    }
+
+    private static String wholeToBinary(long l) {
+    return Long.toBinaryString(l);
+    }
+
+    private static String fractionalToBinary(double num, int precision) {
+        StringBuilder binary = new StringBuilder();
+        while (num > 0 && binary.length() < precision) {
+            double r = num * 2;
+            if (r >= 1) {
+                binary.append(1);
+                num = r - 1;
+            } else {
+                binary.append(0);
+                num = r;
+            }
+        }
+        return binary.toString();
+    }
 	
 	public static void setAllTrue(boolean[] array){
         for (int i = 0; i < array.length; i++){
@@ -136,13 +166,43 @@ public class Main
         booleanToInt(naturalNumbers);
         return booleanToInt(naturalNumbers);
     }
+    
+    public static String andSum(String s1, String s2){
+        StringBuilder result = new StringBuilder();
+		if(s1.length() != s2.length()){
+			System.out.println("Different sizes of strings");
+			return null;
+		}else{
+			for(int i = 0; i < s1.length(); i++){
+				if(s1.charAt(i) == '1' && s2.charAt(i) == '1'){
+					result.append("1");
+				}else {
+					result.append("0");
+				}
+			}
+		}
+		return result.toString();
+        
+    }
+    
+    public static String notBin(String s1){
+        StringBuilder result = new StringBuilder();
+		for(int i = 0; i < s1.length(); i++){
+			if(s1.charAt(i) == '1'){
+				result.append("0");
+			}else{
+			    result.append("1");
+			}
+		}
+		return result.toString();
+        
+    }
 
     public static void main(String[] args) {
         String s = "hello world";
 		int bits = 512;
         byte[] data = null;
 		StringBuilder stb = new StringBuilder();
-	
 	
         try{
             data = s.getBytes(StandardCharsets.UTF_8);
@@ -201,6 +261,75 @@ public class Main
 			w[i] = addBinary(w[i-16], mixStr0, w[i-7], mixStr1);
 			System.out.println("w[" + i + "] " +w[i]);
 		}
+		
+		String[] H = new String[8];
+		int[] primes = findPrimes(312);
+		for (int i = 0; i < 8; i++){
+		    double doubleFrac = Math.sqrt(primes[i])%1;
+		    String binFrac = toBinary(doubleFrac, 32).substring(2);
+		    H[i] = binFrac;
+		    //System.out.println(binFrac);
+		}
+		
+	    final String[] K = new String[64];
+		for (int i = 0; i < 64; i++){
+		    double doubleFrac = Math.cbrt(primes[i])%1;
+		    String binFrac = toBinary(doubleFrac, 32).substring(2);
+		    K[i] = binFrac;
+		    //System.out.println(binFrac);
+		}
+		
+		String a = H[0];
+		String b = H[1];
+		String c = H[2];
+		String d = H[3];
+		String e = H[4];
+		String f = H[5];
+		String g = H[6];
+		String h = H[7];
+		
+		for(int i = 0; i < 64; i++){
+		    String majority = xorSum((andSum(a, b)), (andSum(a, c)), (andSum(b, c)));
+		    String soma1 = xorSum(rightRotate(e, 6), rightRotate(e, 11), rightRotate(e, 25));
+		    String soma0 = xorSum(rightRotate(a, 2), rightRotate(a, 13), rightRotate(a, 22));
+		    String choice = xorSum((andSum(e, f)), (andSum(notBin(e), g)));
+		    String temp1 = addBinary(h, soma1, choice, K[i], w[i]);
+		    String temp2 = addBinary(soma0, majority);
+		    
+	    	h = g;
+		    g = f;
+		    f = e;
+		    e = addBinary(d, temp1);
+		    d = c;
+		    c = b;
+		    b = a;
+		    a = addBinary(temp1, temp2);
+		    
+		    System.out.println("["+i+"] "+a);
+		}
+		
+		H[0] = addBinary(H[0], a);
+		H[1] = addBinary(H[1], b);
+		H[2] = addBinary(H[2], c);
+		H[3] = addBinary(H[3], d);
+		H[4] = addBinary(H[4], e);
+		H[5] = addBinary(H[5], f);
+		H[6] = addBinary(H[6], g);
+		H[7] = addBinary(H[7], h);
+		
+		StringBuilder sha2 = new StringBuilder();
+		for(int i = 0; i < 8; i++){
+		    long decimal = Long.parseLong(H[i],2);
+            String hexStr = Long.toString(decimal,16);
+            sha2.append(hexStr);
+		}
+		
+		String SHA256 = sha2.toString();
+		System.out.println(SHA256);
+		
+		
+		
+		
 
     }
 }
