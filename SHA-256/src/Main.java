@@ -87,6 +87,55 @@ public class Main
 		String firstStep = addBinary(x, y, z);
 		return addBinary(firstStep, a);
 	}
+	
+	public static String toBinary(int toConvert){
+	    return Integer.toBinaryString(toConvert);
+	}
+	
+	public static void setAllTrue(boolean[] array){
+        for (int i = 0; i < array.length; i++){
+            array[i] = true;
+        }
+    }
+    
+    public static int[] booleanToInt(boolean[] BooleanArray){
+        int count = 0;
+        for(boolean bool : BooleanArray){
+            if (bool == true){
+                count++;
+            }
+        }
+        int[] result = new int[count];
+        int index = 0;
+        for(int i = 0; i  < BooleanArray.length; i++){
+            if (BooleanArray[i] == true){
+                result[index] = i;
+                index++;
+            }
+        }
+        return result;
+    }
+    
+    public static int[]  findPrimes(int limit){
+        boolean[] naturalNumbers = new boolean[limit];
+        System.out.println(naturalNumbers[2]);
+        setAllTrue(naturalNumbers);
+        System.out.println(naturalNumbers[2]);
+        int j;
+        for (int i = 2; i < Math.sqrt(limit)+1; i++){
+            if (naturalNumbers[i] == true){
+                j = i*i;
+                while(j < limit){
+                    naturalNumbers[j] = false;
+                    j += i;
+                }
+            }
+        }
+        naturalNumbers[0] = false;
+        naturalNumbers[1] = false;
+        booleanToInt(naturalNumbers);
+        return booleanToInt(naturalNumbers);
+    }
 
     public static void main(String[] args) {
         String s = "hello world";
@@ -103,9 +152,9 @@ public class Main
 
 
 		for (byte b : data){
-			String toBin = Integer.toBinaryString(b);
+			String toBin = toBinary(b);
 			String byteToBin = toBitSize(toBin, 8);
-			System.out.println("tamanho da string =" + byteToBin.length());
+			//System.out.println("string length=" + byteToBin.length());
 			stb.append(byteToBin);
 		}//Converte a array de UTF-8 em uma String binária
 
@@ -119,27 +168,26 @@ public class Main
 			}else{
 				break;
 			}
-		}
+		}//regula o tamanho do message block
 
 		int zeros = (intBitSize + 65 - bits) * -1;
-		String strBin = Integer.toBinaryString(intBitSize);
+		String strBin = toBinary(intBitSize);
 		String strBinSize = toBitSize(strBin, 64);
 
 		System.out.println("zeros " + zeros);
 		for(int i = 0; i < zeros; i++){
 			stb.append("0");
 		}
-		System.out.println("size dec =" + intBitSize);
-		System.out.println("size bin =" + strBinSize);
+		//System.out.println("size dec =" + intBitSize);
+		//System.out.println("size bin =" + strBinSize);
 		stb.append(strBinSize);
 		String str = stb.toString();
 
-		System.out.println(str);
+		//System.out.println(str);
 
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 		int lastIndex = 0;
-		System.out.println("str size" + str.length());
 		String[] w = new String[64];
 		for(int i = 0; i < 16; i++){
 			w[i] = str.substring(lastIndex, lastIndex + 32);
