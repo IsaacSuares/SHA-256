@@ -321,7 +321,7 @@ public class Main
 		for(int i = 0; i < 8; i++){
 		    long decimal = Long.parseLong(H[i],2);
             String hexStr = Long.toString(decimal,16);
-            sha2.append(hexStr);
+            sha2.append(toBitSize(hexStr, 8));
 		}
 		
 		String SHA256 = sha2.toString();
